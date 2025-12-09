@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Configurações</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body class="{{ 'theme-dark' if config.get('theme','dark')=='dark' else 'theme-light' }}">
+  <header class="topbar small">
+    <div class="brand">Configurações</div>
+    <nav class="top-actions">
+      <a href="{{ url_for('index') }}" class="btn ghost">Voltar</a>
+    </nav>
+  </header>
+
+  <main class="settings-container">
+    <section class="card">
+      <h3>Área</h3>
+      <input id="areaNameInput" type="text" value="{{ config.get('area_name','LABORATORIO') }}" />
+    </section>
+
+    <section class="card">
+      <h3>Captura Automática</h3>
+      <label><input id="autoCapture" type="checkbox" {% if config.get('auto_capture', True) %}checked{% endif %}/> Ativar captura automática</label>
+      <p>Intervalo mínimo entre alertas (segundos)</p>
+      <input id="minInterval" type="number" value="{{ config.get('min_seconds_between_alerts',5) }}" min="1" />
+    </section>
+
+    <section class="card">
+      <h3>Aparência</h3>
+      <label><input id="themeToggle" type="checkbox" {% if config.get('theme','dark')=='light' %}checked{% endif %}/> Tema claro</label>
+    </section>
+
+    <section class="card">
+      <h3>Manutenção</h3>
+      <button id="clearAlerts" class="btn ghost">Limpar alertas e imagens</button>
+      <button id="saveSettings" class="btn primary">Salvar</button>
+    </section>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      const saveBtn = document.getElementById('saveSettings');
+      const clearBtn = document.getElementById('clearAlerts');
+      saveBtn.addEventListener('click', ()=>{
+        const area = document.getElementById('areaNameInput').value;
+        const auto = document.getElementById('autoCapture').checked;
+        const minInt = Number(document.getElementById('minInterval').value) || 5;
+        const theme = document.getElementById('themeToggle').checked ? 'light' : 'dark';
+        fetch('/settings', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({
+          area_name: area,
+          auto_capture: auto,
+          min_seconds_between_alerts: minInt,
+          theme: theme
+        })}).then(r=>r.json()).then(j=>{
+          alert('Configurações salvas');
+        }).catch(e=>alert('Erro ao salvar'));
+      });
+      clearBtn.addEventListener('click', ()=>{
+        if(!confirm('Tem certeza? Isso removerá alertas e imagens geradas.')) return;
+        fetch('/clear_alerts', {method:'POST'}).then(r=>r.json()).then(j=>{
+          if(j.status=='ok') alert('Alertas e imagens removidos'); else alert('Erro: '+j.error);
+        });
+      });
+    });
+  </script>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "area_name": "logisatica",
+  "auto_capture": true,
+  "min_seconds_between_alerts": 10,
+  "detection_conf": 0.5,
+  "theme": "light"
+}

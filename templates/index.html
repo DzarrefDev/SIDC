@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Monitoramento - Câmera ao Vivo</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body class="theme-dark">
+  <header class="topbar">
+    <div class="brand">Central de Monitoramento</div>
+    <nav class="top-actions">
+      <button id="btnAlerts" class="btn">Alertas</button>
+      <button id="btnSettings" class="btn ghost">Configurações</button>
+      <button id="btnCapture" class="btn primary">Capturar Agora</button>
+    </nav>
+  </header>
+
+  <main class="center-screen">
+    <section class="live-card">
+      <h2 class="card-title">Câmera ao Vivo — Área: <span id="areaName"></span></h2>
+      <div class="video-wrap">
+        <img id="videoFeed" src="{{ url_for('video_feed') }}" alt="Live Feed" />
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast hidden">
+    <div id="toastText"></div>
+    <button id="toastClose">Dismiss</button>
+  </div>
+
+  <footer class="footer">
+    <div>Servidor: <strong>Local</strong></div>
+    <div id="status" class="status">Conectado</div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

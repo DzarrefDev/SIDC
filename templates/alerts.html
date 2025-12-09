@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Alertas - Capturas</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body class="theme-dark">
+  <header class="topbar small">
+    <div class="brand">Alertas</div>
+    <nav class="top-actions">
+      <a href="{{ url_for('index') }}" class="btn ghost">Voltar ao Vivo</a>
+      <button id="btnDownloadAll" class="btn">Baixar Todas</button>
+    </nav>
+  </header>
+
+  <main class="alerts-container">
+    <section class="controls">
+      <input type="text" id="search" placeholder="Buscar por data / câmera" />
+      <div class="filters">
+        <label>Área:
+          <select id="areaFilter"><option value="">Todas</option></select>
+        </label>
+      </div>
+    </section>
+
+    <section id="alertsGrid" class="grid"></section>
+
+    <nav id="pagination" class="pagination"></nav>
+  </main>
+
+  <div id="previewModal" class="modal" onclick="closePreview(event)">
+    <div class="modal-content">
+      <img id="previewImg" src="" alt="Preview" />
+      <div id="previewMeta" class="preview-meta"></div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
