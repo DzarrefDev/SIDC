@@ -1,4 +1,3 @@
-# Extra routes to integrate UI without overwriting your original app.
 from flask import current_app as app, render_template, jsonify, url_for
 import os
 from datetime import datetime
@@ -31,8 +30,6 @@ def manual_capture():
         ts = datetime.now().strftime('%Y%m%d_%H%M%S')
         filename = f'manual_{ts}.jpg'
         path = os.path.join(CAP_DIR, filename)
-        # If your capture pipeline can provide an image, integrate here.
-        # For now we create an empty placeholder file to signal a capture.
         os.makedirs(CAP_DIR, exist_ok=True)
         with open(path, 'wb') as f:
             f.write(b'')

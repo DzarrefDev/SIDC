@@ -12,9 +12,8 @@ CONFIG_PATH = os.path.join(BASE_DIR, 'config.json')
 ALERTS_DB = os.path.join(CAP_DIR, 'alerts.json')
 os.makedirs(CAP_DIR, exist_ok=True)
 
-# load or create config
 default_config = {
-    "area_name": "LABORATORIO",
+        "area_name": "Câmera 1",
     "auto_capture": True,
     "min_seconds_between_alerts": 5,
     "detection_conf": 0.5
@@ -30,7 +29,6 @@ else:
     with open(CONFIG_PATH, 'w') as f:
         json.dump(config, f, indent=2)
 
-# alerts persistence
 def load_alerts():
     if os.path.exists(ALERTS_DB):
         try:
@@ -43,19 +41,15 @@ def load_alerts():
 def save_alert(alert):
     alerts = load_alerts()
     alerts.insert(0, alert)
-    # keep only latest 1000
     alerts = alerts[:1000]
     with open(ALERTS_DB,'w') as f:
         json.dump(alerts, f, indent=2)
 
-# Initialize detector (optional)
 try:
     detector = HelmetDetector()
 except Exception as e:
     print('Aviso: detector não inicializado:', e)
     detector = None
-
-# To avoid spamming, keep last saved time
 last_saved_time = 0
 
 @app.route('/')
@@ -72,7 +66,6 @@ def gen_frames():
         success, frame = cap.read()
         if not success:
             break
-        # Run detection but do not draw boxes; only decide whether to save
         try:
             if detector and config.get('auto_capture', True):
                 res = detector.detect(frame)
@@ -92,11 +85,8 @@ def gen_frames():
                         }
                         save_alert(alert)
                         last_saved_time = now
-                        # set a small flag file for frontend polling (optional)
         except Exception as e:
-            # detector may fail sometimes; ignore to keep stream alive
             print('Erro na detecção:', e)
-        # encode frame to send to client
         ret, buffer = cv2.imencode('.jpg', frame)
         frame_bytes = buffer.tobytes()
         yield (b'--frame\r\n'
@@ -129,7 +119,6 @@ def manual_capture():
                 cv2.imwrite(path, frame)
             cap.release()
         else:
-            # create empty file
             with open(path,'wb') as f:
                 f.write(b'')
         alert = {
@@ -147,11 +136,9 @@ def manual_capture():
 
 @app.route('/clear_alerts', methods=['POST'])
 def clear_alerts():
-    # remove alerts DB and optionally images
     try:
         if os.path.exists(ALERTS_DB):
             os.remove(ALERTS_DB)
-        # optionally remove all images in CAP_DIR
         for fn in os.listdir(CAP_DIR):
             if fn.lower().endswith(('.jpg','.jpeg','.png')):
                 os.remove(os.path.join(CAP_DIR, fn))
